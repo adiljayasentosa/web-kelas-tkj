@@ -1,0 +1,83 @@
+rules_version = '2';
+
+// Implementasi dari desain-database-website-kelas-v1.0.md §5.
+// Role dibaca dari Custom Claim (request.auth.token.role), BUKAN dari
+// query ke koleksi lain — supaya evaluasi rules tetap cepat & murah,
+// sesuai spesifikasi-teknis-website-kelas-v1.0.md §6.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (role() == "admin" || role() == "superadmin");
+    }
+
+    // --- users/{uid} ---
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- pengumuman/{id} ---
+    match /pengumuman/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- jadwalPelajaran/{hari}, jadwalPiket/{hari} ---
+    match /jadwalPelajaran/{hari} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /jadwalPiket/{hari} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- galeri/{id}, dokumentasi/{id} ---
+    match /galeri/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /dokumentasi/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- kas/ringkasan ---
+    // Opsi A (desain-database §4): saldo SELALU dihitung ulang di client
+    // dengan menjumlahkan transaksi, tidak pernah ditulis manual.
+    match /kas/ringkasan {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // --- kas/ringkasan/transaksi/{id} — ledger append-only ---
+    match /kas/ringkasan/transaksi/{id} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin()
+        && request.resource.data.jumlah is number
+        && request.resource.data.jumlah > 0
+        && request.resource.data.jenis in ["masuk", "keluar"];
+      // Prinsip ledger append-only (desain-database §4): tidak boleh
+      // diubah/dihapus, tanpa kecuali untuk role apa pun.
+      allow update, delete: if false;
+    }
+
+    // Default deny — koleksi yang belum didefinisikan eksplisit di atas
+    // otomatis tertutup, bukan otomatis terbuka.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
