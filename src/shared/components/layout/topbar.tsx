@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { DrawerNav } from "@/shared/components/layout/drawer-nav";
+import { ThemeToggle } from "@/shared/components/theme-toggle";
 import type { NavItem } from "@/config/nav.config";
 
 interface TopbarProps {
@@ -27,10 +28,13 @@ export function Topbar({ userName, userPhotoURL, drawerItems, onSignOut }: Topba
 
       <p className="text-sm font-medium">Halo, {userName}</p>
 
-      <Avatar>
-        {userPhotoURL ? <AvatarImage src={userPhotoURL} alt={userName} /> : null}
-        <AvatarFallback>{initials || "?"}</AvatarFallback>
-      </Avatar>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <Avatar>
+          {userPhotoURL ? <AvatarImage src={userPhotoURL} alt={userName} /> : null}
+          <AvatarFallback>{initials || "?"}</AvatarFallback>
+        </Avatar>
+      </div>
     </header>
   );
 }

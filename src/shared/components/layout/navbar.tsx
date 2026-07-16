@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
+import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { PUBLIC_NAV } from "@/config/nav.config";
 
 export function Navbar() {
@@ -17,9 +18,12 @@ export function Navbar() {
         ))}
       </nav>
 
-      <Button asChild size="sm">
-        <Link href="/login">Login</Link>
-      </Button>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <Button asChild size="sm">
+          <Link href="/login">Login</Link>
+        </Button>
+      </div>
     </header>
   );
 }
