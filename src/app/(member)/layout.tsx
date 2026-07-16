@@ -1,49 +1,19 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { BottomNav } from "@/shared/components/layout/bottom-nav";
-import { Topbar } from "@/shared/components/layout/topbar";
-import { MEMBER_SIDEBAR_NAV } from "@/config/nav.config";
-import { useAuth } from "@/shared/hooks/useAuth";
-import { signOut } from "@/features/auth/services/authService";
+import { requireRole } from "@/features/auth/services/requireRole";
+import { ROLES } from "@/config/roles.config";
+import { MemberShell } from "@/shared/components/layout/member-shell";
 
 /**
- * Shell dashboard umum untuk area Member, sesuai wireframe
- * ui-ux-planning-website-kelas-v1.0.md §3 ("Dashboard — shell umum").
- * Proteksi akses sesungguhnya ada di proxy.ts + Security Rules;
- * pengecekan di sini hanya untuk menampilkan nama user yang benar.
+ * Role Guard sesungguhnya terjadi di sini (server), BUKAN di proxy.ts.
+ * requireRole() memverifikasi penuh lewat Admin SDK dan redirect kalau
+ * tidak berhak — anggota yang tidak login tidak akan sampai merender
+ * MemberShell sama sekali, apalagi children-nya.
  */
-export default function MemberLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const { user, isLoading } = useAuth();
-
-  async function handleSignOut() {
-    await signOut();
-    router.push("/login");
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-svh items-center justify-center text-sm text-muted-foreground">
-        Memuat...
-      </div>
-    );
-  }
+export default async function MemberLayout({ children }: { children: React.ReactNode }) {
+  const session = await requireRole(ROLES.ANGGOTA);
 
   return (
-    <div className="flex min-h-svh">
-      <Sidebar items={MEMBER_SIDEBAR_NAV} />
-      <div className="flex flex-1 flex-col pb-14 md:pb-0">
-        <Topbar
-          userName={user?.displayName ?? "Anggota"}
-          userPhotoURL={user?.photoURL}
-          drawerItems={MEMBER_SIDEBAR_NAV}
-          onSignOut={handleSignOut}
-        />
-        <main className="flex-1 p-4 md:p-6">{children}</main>
-      </div>
-      <BottomNav />
-    </div>
+    <MemberShell user={{ name: session.name, photoURL: session.photoURL }}>
+      {children}
+    </MemberShell>
   );
 }

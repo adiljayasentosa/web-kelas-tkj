@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/shared/components/ui/button";
-import { signIn } from "@/features/auth/services/authService";
+import { signIn, AuthServiceError } from "@/features/auth/services/authService";
+import { ROLES } from "@/config/roles.config";
 
 const loginSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -29,21 +30,32 @@ export default function LoginPage() {
   async function onSubmit(values: LoginFormValues) {
     setServerError(null);
     try {
-      await signIn(values.email, values.password);
-      const redirectTo = searchParams.get("redirectTo") ?? "/dashboard";
-      router.push(redirectTo);
-    } catch {
-      setServerError("Email atau password salah.");
+      const user = await signIn(values.email, values.password);
+
+      // Redirect berdasarkan role: tujuan eksplisit (?redirectTo=...) selalu
+      // diutamakan (mis. user diarahkan balik ke halaman yang tadinya mau
+      // dibuka sebelum proxy.ts menendang ke /login). Kalau tidak ada,
+      // baru fallback ke dashboard sesuai role.
+      const redirectTo = searchParams.get("redirectTo");
+      if (redirectTo) {
+        router.push(redirectTo);
+        return;
+      }
+
+      const tokenResult = await user.getIdTokenResult();
+      const role = tokenResult.claims.role;
+      const isAdminOrAbove = role === ROLES.ADMIN || role === ROLES.SUPERADMIN;
+      router.push(isAdminOrAbove ? "/admin/dashboard" : "/dashboard");
+    } catch (error) {
+      setServerError(
+        error instanceof AuthServiceError ? error.message : "Gagal masuk. Coba lagi."
+      );
     }
   }
 
   return (
     <main className="flex min-h-svh items-center justify-center p-6">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-sm space-y-4"
-        noValidate
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm space-y-4" noValidate>
         <div className="space-y-1 text-center">
           <h1 className="text-xl font-semibold">Website Kelas</h1>
           <p className="text-muted-foreground text-sm">Masuk ke akunmu</p>
@@ -60,9 +72,7 @@ export default function LoginPage() {
             className="border-input h-10 w-full rounded-lg border px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             {...register("email")}
           />
-          {errors.email ? (
-            <p className="text-danger text-xs">{errors.email.message}</p>
-          ) : null}
+          {errors.email ? <p className="text-danger text-xs">{errors.email.message}</p> : null}
         </div>
 
         <div className="space-y-1.5">
@@ -81,7 +91,11 @@ export default function LoginPage() {
           ) : null}
         </div>
 
-        {serverError ? <p className="text-danger text-sm">{serverError}</p> : null}
+        {serverError ? (
+          <p role="alert" className="text-danger text-sm">
+            {serverError}
+          </p>
+        ) : null}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Memproses..." : "Masuk"}
