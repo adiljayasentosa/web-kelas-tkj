@@ -6,9 +6,15 @@ import { hasMinimumRole } from "@/config/roles.config";
  * Entry point tunggal Next.js (proxy.ts — nama baru untuk `middleware.ts`
  * sejak Next.js 16, lihat docs/struktur-proyek-website-kelas-v1.0.md §1.1).
  *
- * Tugasnya HANYA mengarahkan (redirect) berdasarkan status login & role
- * untuk kenyamanan UX. Ini bukan lapisan keamanan utama — lihat komentar
- * di src/middleware/checkAuth.ts.
+ * Tugasnya HANYA mengarahkan (redirect) lebih awal berdasarkan status
+ * login & role, supaya user tidak sempat melihat layout ter-render dulu
+ * baru di-redirect (kenyamanan UX). Ini BUKAN lapisan keamanan utama —
+ * lapisan sesungguhnya ada di dua tempat:
+ *   1. requireRole() (src/features/auth/services/requireRole.ts) — verifikasi
+ *      PENUH lewat Admin SDK di setiap Server Component layout.
+ *   2. Firebase Security Rules (firestore.rules/storage.rules) — baris
+ *      pertahanan terakhir di level database, berlaku bahkan kalau ada
+ *      yang mencoba akses Firestore/Storage langsung tanpa lewat app ini.
  */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
