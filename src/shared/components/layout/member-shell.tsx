@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { BottomNav } from "@/shared/components/layout/bottom-nav";
 import { Topbar } from "@/shared/components/layout/topbar";
+import { AutoBreadcrumb } from "@/shared/components/layout/auto-breadcrumb";
 import { MEMBER_SIDEBAR_NAV } from "@/config/nav.config";
 import { signOut } from "@/features/auth/services/authService";
 import type { SessionUser } from "@/features/auth/services/session";
@@ -36,7 +37,12 @@ export function MemberShell({ user, children }: MemberShellProps) {
           drawerItems={MEMBER_SIDEBAR_NAV}
           onSignOut={handleSignOut}
         />
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6">
+          <div className="mb-4">
+            <AutoBreadcrumb />
+          </div>
+          {children}
+        </main>
       </div>
       <BottomNav />
     </div>

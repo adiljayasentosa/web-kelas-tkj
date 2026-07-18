@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { Topbar } from "@/shared/components/layout/topbar";
+import { AutoBreadcrumb } from "@/shared/components/layout/auto-breadcrumb";
 import { ADMIN_SIDEBAR_NAV } from "@/config/nav.config";
 import { signOut } from "@/features/auth/services/authService";
 import type { SessionUser } from "@/features/auth/services/session";
@@ -31,7 +32,12 @@ export function AdminShell({ user, children }: AdminShellProps) {
           drawerItems={ADMIN_SIDEBAR_NAV}
           onSignOut={handleSignOut}
         />
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6">
+          <div className="mb-4">
+            <AutoBreadcrumb />
+          </div>
+          {children}
+        </main>
       </div>
     </div>
   );
