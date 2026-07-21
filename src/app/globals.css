@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /*
   Tailwind CSS v4 tidak lagi memakai tailwind.config.ts — semua token
