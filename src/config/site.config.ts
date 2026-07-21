@@ -7,6 +7,8 @@
 export const siteConfig = {
   name: "Website Kelas",
   className: "Kelas XII IPA 1",
+  jurusan: "Ilmu Pengetahuan Alam (IPA)",
+  tahunAjaran: "2025/2026",
   tagline: "Satu tempat untuk semua kebutuhan kelas kita — jadwal, piket, kas, sampai kenangan bersama.",
   tentang:
     "Website ini dibuat oleh dan untuk anggota kelas — tempat menyimpan jadwal, mencatat kas, membagikan pengumuman, dan mengarsipkan kenangan bersama dalam satu tempat yang mudah diakses kapan saja.",
