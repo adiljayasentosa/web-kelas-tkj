@@ -7,7 +7,7 @@ import { siteConfig } from "@/config/site.config";
 /**
  * Data info kelas ditampilkan sebagai daftar label:value dalam satu Card
  * (bukan 4 Card terpisah) — sengaja dibedakan gaya dari Statistik Kelas
- * (StatistikSection) yang menampilkan angka. Di sini isinya fakta
+ * (StatisticsSection) yang menampilkan angka. Di sini isinya fakta
  * deskriptif, jadi format daftar lebih pas daripada kartu angka.
  */
 const INFO_KELAS = [
