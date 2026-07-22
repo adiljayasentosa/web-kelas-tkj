@@ -13,7 +13,7 @@ interface AdminShellProps {
   children: React.ReactNode;
 }
 
-/** Verifikasi akses sudah selesai di (admin)/layout.tsx lewat requireRole(). */
+/** Verifikasi akses sudah selesai di admin/layout.tsx lewat requireRole(). */
 export function AdminShell({ user, children }: AdminShellProps) {
   const router = useRouter();
 

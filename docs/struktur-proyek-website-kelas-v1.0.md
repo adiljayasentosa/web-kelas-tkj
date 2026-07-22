@@ -27,19 +27,24 @@ website-kelas/
 │   │   ├── page.tsx              # Landing Page
 │   │   ├── profil/
 │   │   └── pengumuman/
-│   ├── (member)/                # Route group: butuh login
+│   ├── (member)/                # Route group: butuh login (URL tanpa prefix, mis. /dashboard)
 │   │   ├── layout.tsx             # Layout khusus area member
 │   │   ├── jadwal/
 │   │   ├── piket/
 │   │   ├── galeri/
 │   │   ├── dokumentasi/
 │   │   └── kas/
-│   ├── (admin)/                  # Route group: khusus admin
+│   ├── admin/                    # Folder BIASA (bukan route group) — wajib agar URL berprefix /admin/*
 │   │   ├── layout.tsx
 │   │   └── dashboard/
 │   ├── api/                      # Route handlers (API layer)
 │   └── layout.tsx                # Root layout
 │
+```
+
+> **Update (perbaikan bug deploy):** `admin/` **tidak boleh** ditulis sebagai `(admin)` (route group). Route group di App Router sengaja **tidak** ikut jadi bagian URL — cocok untuk `(public)` dan `(member)` karena keduanya memang tidak butuh prefix (`/`, `/profil`, `/dashboard`, `/jadwal`, dst.), tapi salah kalau dipakai untuk `admin`, karena tujuannya justru supaya URL berprefix `/admin/*`. Versi awal dokumen ini keliru menuliskan `(admin)` sebagai route group, yang menyebabkan `(admin)/dashboard` dan `(member)/dashboard` sama-sama menghasilkan URL `/dashboard` — konflik yang baru terdeteksi Next.js saat build/deploy. Sudah diperbaiki di kode maupun di sini.
+
+```
 ├── features/                   # Modul per domain (feature-based)
 │   ├── anggota/
 │   │   ├── components/

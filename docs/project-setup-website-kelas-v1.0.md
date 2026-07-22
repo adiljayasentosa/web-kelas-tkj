@@ -30,7 +30,7 @@ npx create-next-app@latest website-kelas --typescript --tailwind --eslint --app 
 | `--typescript` | Sudah disepakati sejak spesifikasi teknis — type-safety mengurangi bug sejak development |
 | `--tailwind` | Sesuai tech stack; otomatis memasang Tailwind v4 |
 | `--eslint` | Linting bawaan Next.js, mendeteksi masalah umum React/Next.js sejak dini |
-| `--app` | App Router — dibutuhkan untuk Server Components, Server Actions (dipakai memanggil Firebase Admin SDK), dan route groups `(public)/(member)/(admin)` yang sudah dirancang |
+| `--app` | App Router — dibutuhkan untuk Server Components, Server Actions (dipakai memanggil Firebase Admin SDK), dan route groups `(public)`/`(member)` + folder biasa `admin` yang sudah dirancang (lihat catatan perbaikan di struktur-proyek-website-kelas-v1.0.md §1.2 — `admin` sengaja BUKAN route group, supaya URL berprefix `/admin/*`) |
 | `--src-dir` | Memisahkan kode aplikasi (`src/`) dari file konfigurasi root — konsisten dengan struktur proyek yang sudah disepakati |
 | `--import-alias "@/*"` | Alias pendek untuk import, mengarah ke `src/*` — dipakai konsisten di semua dokumen sebelumnya |
 
